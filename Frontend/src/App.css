@@ -144,6 +144,79 @@ a {
   opacity: 0.5;
 }
 
+/* =========================
+   CATEGORY SELECTOR
+========================= */
+
+.category-wrapper {
+  max-width: 1050px;
+
+  margin: auto;
+
+  padding: 22px 24px 0;
+
+  overflow: hidden;
+}
+
+
+.category-scroll {
+  display: flex;
+
+  gap: 9px;
+
+  overflow-x: auto;
+
+  padding-bottom: 4px;
+
+  scrollbar-width: none;
+}
+
+
+.category-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+
+.category-button {
+  flex-shrink: 0;
+
+  border: 1px solid #292d37;
+
+  background: #14171e;
+
+  color: #9298a7;
+
+  padding: 9px 14px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.category-button:hover {
+  color: #e7e9ef;
+
+  border-color: #3b4050;
+
+  background: #191c24;
+}
+
+
+.category-button.active {
+  color: #ffffff;
+
+  border-color: #6e59d9;
+
+  background: rgba(124, 92, 255, 0.18);
+
+  box-shadow:
+    0 4px 18px rgba(124, 92, 255, 0.12);
+}
 
 /* =========================
    CATEGORY
@@ -637,6 +710,16 @@ footer {
 
 
   .why p {
+    font-size: 12px;
+  }
+
+  .category-wrapper {
+    padding: 15px 14px 0;
+  }
+
+  .category-button {
+    padding: 8px 12px;
+
     font-size: 12px;
   }
 
