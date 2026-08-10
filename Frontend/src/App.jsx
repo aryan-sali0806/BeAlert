@@ -3,240 +3,225 @@ import { supabase } from './supabase'
 import './App.css'
 
 const categories = [
-  { name: 'Artificial Intelligence', label: '🔥 AI' },
-  { name: 'Technology', label: '💻 Tech' },
-  { name: 'Finance', label: '💰 Finance' },
-  { name: 'Space', label: '🚀 Space' },
-  { name: 'Science', label: '🔬 Science' },
-  { name: 'Gaming', label: '🎮 Gaming' },
-  { name: 'Cybersecurity', label: '🔐 Cyber' },
-  { name: 'Startups', label: '🚀 Startups' }
+  { name: 'Artificial Intelligence', label: 'AI' },
+  { name: 'Technology', label: 'Tech' },
+  { name: 'Finance', label: 'Finance' },
+  { name: 'Space', label: 'Space' },
+  { name: 'Science', label: 'Science' },
+  { name: 'Gaming', label: 'Gaming' },
+  { name: 'Cybersecurity', label: 'Cyber' },
+  { name: 'Startups', label: 'Startups' }
 ]
 
 function App() {
-
-  const [selectedCategory, setSelectedCategory] =
-    useState('Artificial Intelligence')
+  const [selectedCategory, setSelectedCategory] = useState(
+    'Artificial Intelligence'
+  )
 
   const [news, setNews] = useState([])
-
   const [loading, setLoading] = useState(true)
-
   const [error, setError] = useState(null)
-
 
   useEffect(() => {
     getNews()
   }, [selectedCategory])
 
-
   async function getNews() {
-
     setLoading(true)
     setError(null)
 
     const { data, error } = await supabase
-
       .from('news')
-
       .select('*')
-
       .eq('category', selectedCategory)
-
-      .order('created_at', { ascending: false })
-
+      .order('importance_score', { ascending: false })
       .limit(5)
 
-
     if (error) {
-
       console.error(error)
-
       setError(error.message)
-
       setLoading(false)
-
       return
     }
 
-
     setNews(data || [])
-
     setLoading(false)
   }
 
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
+  })
 
   return (
-
     <div className="app">
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
 
       <header className="header">
 
         <div className="brand">
 
-          <div className="logo">
-            N
+          <div className="brand-mark">
+            NI
           </div>
 
-          <div>
-
-            <h1>
-              News Intelligence
-            </h1>
-
-            <p>
-              AI-powered news, without the noise.
-            </p>
-
+          <div className="brand-name">
+            NEWS
+            <span>INTELLIGENCE</span>
           </div>
 
         </div>
 
+        <div className="header-right">
 
-        <button
-          className="refresh-btn"
-          onClick={getNews}
-          disabled={loading}
-        >
+          <div className="live-status">
+            <span></span>
+            LIVE
+          </div>
 
-          {loading ? '↻' : '⟳'}
+          <button
+            className="refresh"
+            onClick={getNews}
+            disabled={loading}
+            aria-label="Refresh news"
+          >
+            ↻
+          </button>
 
-          <span>
-            Refresh
-          </span>
-
-        </button>
+        </div>
 
       </header>
 
 
-      {/* CATEGORY SELECTOR */}
+      {/* ================= CATEGORY NAV ================= */}
 
-      <div className="category-wrapper">
+      <nav className="category-nav">
 
         <div className="category-scroll">
 
-          {categories.map(category => (
+          {categories.map((category) => (
 
             <button
-
               key={category.name}
-
-              className={`category-button ${
+              className={
                 selectedCategory === category.name
-                  ? 'active'
-                  : ''
-              }`}
-
+                  ? 'category active'
+                  : 'category'
+              }
               onClick={() =>
                 setSelectedCategory(category.name)
               }
-
             >
-
               {category.label}
-
             </button>
 
           ))}
 
         </div>
 
-      </div>
+      </nav>
 
 
-      {/* CATEGORY TITLE */}
+      {/* ================= MAIN ================= */}
 
-      <section className="category-section">
+      <main className="main">
 
-        <p className="eyebrow">
-          YOUR BRIEFING
-        </p>
+        {/* Briefing header */}
 
+        <section className="briefing-header">
 
-        <h2>
+          <div>
 
-          {categories.find(
-            c => c.name === selectedCategory
-          )?.label}
+            <div className="date">
+              {today.toUpperCase()}
+            </div>
 
-          {' '}
+            <h1>
+              Your briefing
+            </h1>
 
-          {selectedCategory
-            .replace('Artificial Intelligence', 'Artificial Intelligence')
-          }
+            <p>
+              The stories worth your attention.
+            </p>
 
-        </h2>
+          </div>
 
+          <div className="story-total">
 
-        <p className="subtitle">
+            <strong>
+              {news.length}
+            </strong>
 
-          Today's 5 most important stories
+            <span>
+              STORIES
+            </span>
 
-        </p>
+          </div>
 
-      </section>
-
-
-      {/* LOADING */}
-
-      {loading && (
-
-        <div className="loading">
-
-          <div className="spinner"></div>
-
-          <p>
-            Analyzing today's news...
-          </p>
-
-        </div>
-
-      )}
+        </section>
 
 
-      {/* ERROR */}
+        {/* ================= LOADING ================= */}
 
-      {error && !loading && (
+        {loading && (
 
-        <div className="error-box">
+          <div className="loading">
 
-          <h3>
-            Something went wrong
-          </h3>
+            <div className="loader"></div>
 
-          <p>
-            {error}
-          </p>
+            <span>
+              Curating your briefing...
+            </span>
 
-          <button onClick={getNews}>
-            Try again
-          </button>
+          </div>
 
-        </div>
-
-      )}
+        )}
 
 
-      {/* NEWS */}
+        {/* ================= ERROR ================= */}
 
-      {!loading && !error && (
+        {error && !loading && (
 
-        <main className="news-container">
+          <div className="empty-state">
 
-          {news.length === 0 ? (
+            <div className="empty-symbol">
+              !
+            </div>
 
-            <div className="empty">
+            <h2>
+              Something went wrong
+            </h2>
 
-              <div className="empty-icon">
-                📰
+            <p>
+              {error}
+            </p>
+
+            <button onClick={getNews}>
+              Retry
+            </button>
+
+          </div>
+
+        )}
+
+
+        {/* ================= EMPTY ================= */}
+
+        {!loading &&
+          !error &&
+          news.length === 0 && (
+
+            <div className="empty-state">
+
+              <div className="empty-symbol">
+                +
               </div>
 
-              <h3>
-                No news available yet
-              </h3>
+              <h2>
+                Nothing here yet
+              </h2>
 
               <p>
                 This category hasn't been processed yet.
@@ -244,103 +229,106 @@ function App() {
 
             </div>
 
-          ) : (
-
-            news.map((article, index) => (
-
-              <article
-
-                className={`news-card ${
-                  index === 0
-                    ? 'featured'
-                    : ''
-                }`}
-
-                key={article.id}
-
-              >
-
-                <div className="rank">
-
-                  {String(index + 1)
-                    .padStart(2, '0')}
-
-                </div>
+          )}
 
 
-                <div className="news-content">
+        {/* ================= NEWS GRID ================= */}
 
-                  <div className="card-top">
+        {!loading &&
+          !error &&
+          news.length > 0 && (
 
-                    <span className="category-badge">
+            <section className="news-grid">
 
-                      {selectedCategory}
+              {news.map((article, index) => (
 
+                <article
+                  className={
+                    index === 0
+                      ? 'news-card top-card'
+                      : 'news-card'
+                  }
+                  key={article.id}
+                >
+
+                  {/* Card top */}
+
+                  <div className="news-card-top">
+
+                    <span className="news-number">
+                      {String(index + 1).padStart(2, '0')}
                     </span>
 
+                    <span className="importance">
 
-                    <span className="score">
+                      <span className="star">
+                        ★
+                      </span>
 
-                      ⭐ {article.importance_score}
+                      {article.importance_score}
 
                     </span>
 
                   </div>
 
 
-                  <h3 className="title">
+                  {/* Category */}
 
+                  <div className="news-category">
+                    {selectedCategory}
+                  </div>
+
+
+                  {/* Title */}
+
+                  <h2>
                     {article.title}
+                  </h2>
 
-                  </h3>
 
+                  {/* Summary */}
 
-                  <p className="summary">
-
+                  <p className="news-summary">
                     {article.summary}
-
                   </p>
 
 
-                  <div className="why">
+                  {/* Why it matters */}
+
+                  <div className="why-card">
 
                     <div className="why-title">
-
-                      🧠 Why it matters
-
+                      WHY IT MATTERS
                     </div>
 
                     <p>
-
                       {article.why_it_matters}
-
                     </p>
 
                   </div>
 
 
-                  <div className="card-footer">
+                  {/* Footer */}
 
-                    <span className="rank-label">
+                  <div className="news-card-footer">
 
-                      #{article.rank}
+                    <span>
+
+                      {article.importance_score >= 90
+                        ? 'HIGH IMPACT'
+                        : article.importance_score >= 75
+                          ? 'SIGNIFICANT'
+                          : 'NOTABLE'}
 
                     </span>
 
-
                     <a
-
                       href={article.url}
-
                       target="_blank"
-
                       rel="noopener noreferrer"
-
-                      className="read-btn"
-
                     >
 
-                      Read original
+                      Read
 
                       <span>
                         ↗
@@ -350,47 +338,65 @@ function App() {
 
                   </div>
 
-                </div>
+                </article>
 
-              </article>
+              ))}
 
-            ))
+            </section>
 
           )}
 
-        </main>
-
-      )}
+      </main>
 
 
-      <footer>
+      {/* ================= BOTTOM NAV ================= */}
 
-        <p>
+      <nav className="bottom-nav">
 
-          Powered by
+        <button className="bottom-active">
 
-          {' '}
+          <span>
+            ◉
+          </span>
 
-          <strong>
-            n8n
-          </strong>
+          Briefing
 
-          {' + '}
+        </button>
 
-          <strong>
-            Supabase
-          </strong>
+        <button>
 
-          {' + AI'}
+          <span>
+            ☆
+          </span>
 
-        </p>
+          Saved
 
-      </footer>
+        </button>
+
+        <button>
+
+          <span>
+            ⌕
+          </span>
+
+          Explore
+
+        </button>
+
+        <button>
+
+          <span>
+            ☰
+          </span>
+
+          More
+
+        </button>
+
+      </nav>
 
     </div>
-
   )
 }
-
 
 export default App
